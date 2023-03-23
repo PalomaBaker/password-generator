@@ -1,240 +1,57 @@
-// Array of special characters to be included in password
-var specialCharacters = [
-    '@',
-    '%',
-    '+',
-    '\\',
-    '/',
-    "'",
-    '!',
-    '#',
-    '$',
-    '^',
-    '?',
-    ':',
-    ',',
-    ')',
-    '(',
-    '}',
-    '{',
-    ']',
-    '[',
-    '~',
-    '-',
-    '_',
-    '.',
-  ];
-  
-  // Array of numeric characters to be included in password
-  var numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-  
-  // Array of lowercase characters to be included in password
-  var lowerCase = [
-    'a',
-    'b',
-    'c',
-    'd',
-    'e',
-    'f',
-    'g',
-    'h',
-    'i',
-    'j',
-    'k',
-    'l',
-    'm',
-    'n',
-    'o',
-    'p',
-    'q',
-    'r',
-    's',
-    't',
-    'u',
-    'v',
-    'w',
-    'x',
-    'y',
-    'z',
-  ];
-  
-  // Array of uppercase characters to be included in password
-  var upperCase = [
-    'A',
-    'B',
-    'C',
-    'D',
-    'E',
-    'F',
-    'G',
-    'H',
-    'I',
-    'J',
-    'K',
-    'L',
-    'M',
-    'N',
-    'O',
-    'P',
-    'Q',
-    'R',
-    'S',
-    'T',
-    'U',
-    'V',
-    'W',
-    'X',
-    'Y',
-    'Z',
-  ];
-  
-  // Function to prompt user for password options
-  function getPasswordOptions() {
-    // Variable to store length of password from user input
-    var length = parseInt(
-      prompt('How many characters would you like your password to contain?'),
-      10
-    );
-  
-    // Conditional statement to check if password length is a number. Prompts end if this evaluates false
-    if (Number.isNaN(length)) {
-      alert('Password length must be provided as a number');
-      return null;
+
+  // Add a click event listener to the "generate" button
+  document.getElementById("generate").addEventListener("click", function() {
+
+    // Prompt the user for the password length
+    var passwordLength = prompt("Enter the length of your password (between 8 and 128 characters)");
+
+    // Validate the user's input for the password length
+    while (passwordLength < 8 || passwordLength > 128 || isNaN(passwordLength)) {
+      passwordLength = prompt("Invalid length. Please enter a number between 8 and 128.");
     }
-  
-    // Conditional statement to check if password length is at least 8 characters long. Prompts end if this evaluates false
-    if (length < 8) {
-      alert('Password length must be at least 8 characters');
-      return null;
+
+    // Prompt the user for the character types to include in the password
+    var includeLowercase = confirm("Do you want to include lowercase letters?");
+    var includeUppercase = confirm("Do you want to include uppercase letters?");
+    var includeNumbers = confirm("Do you want to include numbers?");
+    var includeSpecialChars = confirm("Do you want to include special characters?");
+
+    // Validate the user's input for at least one character type
+    while (!includeLowercase && !includeUppercase && !includeNumbers && !includeSpecialChars) {
+      alert("Please select at least one character type.");
+      includeLowercase = confirm("Do you want to include lowercase letters?");
+      includeUppercase = confirm("Do you want to include uppercase letters?");
+      includeNumbers = confirm("Do you want to include numbers?");
+      includeSpecialChars = confirm("Do you want to include special characters?");
     }
-  
-    // Conditional statement to check if password length is less than 128 characters long. Prompts end if this evaluates false
-    if (length > 128) {
-      alert('Password length must less than 129 characters');
-      return null;
+
+    // Define arrays of characters to use for generating the password
+    var lowercaseChars = "abcdefghijklmnopqrstuvwxyz";
+    var uppercaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    var numberChars = "0123456789";
+    var specialChars = "!#$%&'()*+,-./:;<=>?@[\]^_`{|}~";
+
+    // Initialize an empty string to store the password
+    var password = "";
+
+    // Loop through the selected character types and randomly select characters from the corresponding array
+    for (var i = 0; i < passwordLength; i++) {
+      if (includeLowercase) {
+        password += lowercaseChars.charAt(Math.floor(Math.random() * lowercaseChars.length));
+      }
+      if (includeUppercase) {
+        password += uppercaseChars.charAt(Math.floor(Math.random() * uppercaseChars.length));
+      }
+      if (includeNumbers) {
+        password += numberChars.charAt(Math.floor(Math.random() * numberChars.length));
+      }
+      if (includeSpecialChars) {
+        password += specialChars.charAt(Math.floor(Math.random() * specialChars.length));
+      }
     }
-  
-    // Variable to store boolean regarding the inclusion of special characters
-    var hasSpecialCharacters = confirm(
-      'Click OK to confirm including special characters.'
-    );
-  
-    // Variable to store boolean regarding the inclusion of numeric characters
-    var hasNumbers = confirm(
-      'Click OK to confirm including numeric characters.'
-    );
-  
-    // Variable to store boolean regarding the inclusion of lowercase characters
-    var hasLowerCase = confirm(
-      'Click OK to confirm including lowercase characters.'
-    );
-  
-    // Variable to store boolean regarding the inclusion of uppercase characters
-    var hasUpperCase = confirm(
-      'Click OK to confirm including uppercase characters.'
-    );
-  
-    // Conditional statement to check if user does not include any types of characters. Password generator ends if all four variables evaluate to false
-    if (
-      hasSpecialCharacters === false &&
-      hasNumbers === false &&
-      hasLowerCase === false &&
-      hasUpperCase === false
-    ) {
-      alert('Must select at least one character type');
-      return null;
-    }
-  
-    // Object to store user input
-    var passwordOptions = {
-      length: length,
-      hasSpecialCharacters: hasSpecialCharacters,
-      hasNumbers: hasNumbers,
-      hasLowerCase: hasLowerCase,
-      hasUpperCase: hasUpperCase,
-    };
-  
-    return passwordOptions;
-  }
-  
-  // Function for getting a random element from an array
-  function getRandom(arr) {
-    var randIndex = Math.floor(Math.random() * arr.length);
-    var randElement = arr[randIndex];
-  
-    return randElement;
-  }
-  
-  // Function to generate password with user input
-  function generatePassword() {
-    var options = getPasswordOptions();
-    // Variable to store password as it's being concatenated
-    var result = [];
-  
-    // Array to store types of characters to include in password
-    var possibleCharacters = [];
-  
-    // Array to contain one of each type of chosen character to ensure each will be used
-    var guaranteedCharacters = [];
-  
-    // Check if an options object exists, if not exit the function
-    if (!options) return null;
-  
-    // Conditional statement that adds array of special characters into array of possible characters based on user input
-    // Push new random special character to guaranteedCharacters
-    if (options.hasSpecialCharacters) {
-      possibleCharacters = possibleCharacters.concat(specialCharacters);
-      guaranteedCharacters.push(getRandom(specialCharacters));
-    }
-  
-    // Conditional statement that adds array of numeric characters into array of possible characters based on user input
-    // Push new random special character to guaranteedCharacters
-    if (options.hasNumbers) {
-      possibleCharacters = possibleCharacters.concat(numbers);
-      guaranteedCharacters.push(getRandom(numbers));
-    }
-  
-    // Conditional statement that adds array of lowercase characters into array of possible characters based on user input
-    // Push new random lower-cased character to guaranteedCharacters
-    if (options.hasLowerCase) {
-      possibleCharacters = possibleCharacters.concat(lowerCase);
-      guaranteedCharacters.push(getRandom(lowerCase));
-    }
-  
-    // Conditional statement that adds array of uppercase characters into array of possible characters based on user input
-    // Push new random upper-cased character to guaranteedCharacters
-    if (options.hasUpperCase) {
-      possibleCharacters = possibleCharacters.concat(upperCase);
-      guaranteedCharacters.push(getRandom(upperCase));
-    }
-  
-    // For loop to iterate over the password length from the options object, selecting random indices from the array of possible characters and concatenating those characters into the result variable
-    for (var i = 0; i < options.length; i++) {
-      var possibleCharacter = getRandom(possibleCharacters);
-  
-      result.push(possibleCharacter);
-    }
-  
-    // Mix in at least one of each guaranteed character in the result
-    for (var i = 0; i < guaranteedCharacters.length; i++) {
-      result[i] = guaranteedCharacters[i];
-    }
-  
-    // Transform the result into a string and pass into writePassword
-    return result.join('');
-  }
-  
-  // Get references to the #generate element
-  var generateBtn = document.querySelector('#generate');
-  
-  // Write password to the #password input
-  function writePassword() {
-    var password = generatePassword();
-    var passwordText = document.querySelector('#password');
-  
-    passwordText.value = password;
-  }
-  
-  // Add event listener to generate button
-  generateBtn.addEventListener('click', writePassword);
-  
+
+   
+
+    // Display the generated password on the page
+     document.getElementById("password").innerHTML = password;
+  });
